@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, Time, Enum as SAEnum
+from sqlalchemy import Column, Integer, String, Date, Time, Enum as SAEnum, ForeignKey
 from sqlalchemy.orm import relationship
 from app.database import Base
 import enum
@@ -30,7 +30,7 @@ class Reserva(Base):
     __tablename__ = "reservas"
 
     id = Column(Integer, primary_key=True, index=True)
-    sala_id = Column(Integer, nullable=False)
+    sala_id = Column(Integer, ForeignKey("salas.id"), nullable=False)
     nome_solicitante = Column(String(100), nullable=False)
     email = Column(String(150), nullable=False)
     data = Column(Date, nullable=False)
