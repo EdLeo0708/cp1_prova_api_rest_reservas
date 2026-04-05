@@ -1,60 +1,56 @@
-# 🏢 API REST — Reservas de Salas Corporativas
+# API REST — Reservas de Salas Corporativas
 
-> **FIAP — 3ESPR — 2026 | CP1 — Arquitetura Orientada a Serviço**  
-> Professora: Damiana Costa
+**FIAP — 3ESPR — 2026 | CP1 — Arquitetura Orientada a Serviço**
+Professora: Damiana Costa
+
+---
+
+## 👤 Integrante
+
+Edson Leonardo Pacheco Navia — RM 553737
 
 ---
 
 ## 📌 Sobre o Projeto
 
-API REST desenvolvida em **Python + FastAPI** para gerenciamento de reservas de salas corporativas.  
-Substitui planilhas manuais por um sistema centralizado com regras de negócio, autenticação JWT e tratamento padronizado de erros.
-
----
-
-## 🛠️ Tecnologias
-
-| Tecnologia | Uso |
-|---|---|
-| Python | Linguagem |
-| FastAPI | Framework Web |
-| SQLAlchemy | ORM |
-| SQLite | Banco de dados (dev) |
-| python-jose | JWT |
-| Pydantic v2 | Validação de dados |
-| Uvicorn | Servidor ASGI |
-| Pytest | Testes |
+API REST desenvolvida em Python com FastAPI para gerenciamento de reservas de salas corporativas. O sistema substitui o controle manual por planilhas, centralizando as reservas com regras de negócio, autenticação JWT e tratamento padronizado de erros.
 
 ---
 
 ## 🚀 Como Executar
 
-### Pré-requisitos
-- Python 3.11 ou superior
-- pip
+**Pré-requisitos:** Python 3.11 ou superior instalado na máquina.
 
-### 1. Crie e ative o ambiente virtual
+**1. Clone o repositório**
 ```bash
+git clone <URL_DO_REPOSITORIO>
+cd reservas_api
+```
 
-source venv/bin/activate
+**2. Crie e ative o ambiente virtual**
+```bash
+python -m venv venv
 
 # Windows
 venv\Scripts\activate
+
+# Linux / macOS
+source venv/bin/activate
 ```
 
-### 2. Instale as dependências
+**3. Instale as dependências**
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Execute a API
+**4. Execute a API**
 ```bash
 uvicorn app.main:app --reload
 ```
 
-A API estará disponível em: **http://localhost:8000**
+A API estará disponível em: http://localhost:8000
 
-### 4. Acesse a documentação interativa (Swagger)
+**5. Acesse a documentação Swagger**
 ```
 http://localhost:8000/docs
 ```
@@ -63,62 +59,59 @@ http://localhost:8000/docs
 
 ## 🔐 Autenticação
 
-A API utiliza **JWT (JSON Web Token)**.
+A API utiliza JWT (JSON Web Token). Para acessar as rotas protegidas é necessário fazer login e usar o token retornado.
 
-### Credenciais disponíveis (para testes):
+**Credenciais para teste:**
+- Usuário: `admin` — Senha: `admin123`
+- Usuário: `user` — Senha: `user123`
 
-| Usuário | Senha |
-|---|---|
-| `admin` | `admin123` |
-| `user` | `user123` |
+**Como usar:**
+1. Faça POST em `/auth/login` com username e password
+2. Copie o `access_token` da resposta
+3. Envie o token no header: `Authorization: Bearer <token>`
 
-### Fluxo de autenticação:
-1. Faça **POST /auth/login** com `username` e `password`
-2. Copie o `access_token` retornado
-3. Use o token no header `Authorization: Bearer <token>`
-4. Rotas protegidas: **POST /reservas/** e **PATCH /reservas/{id}/cancelar**
+Rotas que exigem autenticação: `POST /reservas/` e `PATCH /reservas/{id}/cancelar`
 
 ---
 
-## 📡 Endpoints
+## 📡 Endpoints Disponíveis
 
-### 🔑 Auth
-| Método | Rota | Descrição |
-|---|---|---|
-| POST | `/auth/login` | Autentica e retorna JWT |
+**Autenticação**
+- POST `/auth/login` — realiza login e retorna o token JWT
 
-### 🏠 Salas
-| Método | Rota | Descrição | Auth |
-|---|---|---|---|
-| POST | `/salas/` | Cadastrar sala | ❌ |
-| GET | `/salas/` | Listar todas as salas | ❌ |
-| GET | `/salas/{id}` | Buscar sala por ID | ❌ |
-| PATCH | `/salas/{id}` | Atualizar sala | ❌ |
-| DELETE | `/salas/{id}` | Remover sala | ❌ |
+**Salas**
+- POST `/salas/` — cadastrar nova sala
+- GET `/salas/` — listar todas as salas
+- GET `/salas/{id}` — buscar sala por ID
+- PATCH `/salas/{id}` — atualizar dados da sala
+- DELETE `/salas/{id}` — remover sala
 
-### 📅 Reservas
-| Método | Rota | Descrição | Auth |
-|---|---|---|---|
-| POST | `/reservas/` | Criar reserva | ✅ |
-| GET | `/reservas/` | Listar reservas | ❌ |
-| GET | `/reservas/{id}` | Buscar reserva por ID | ❌ |
-| PATCH | `/reservas/{id}/cancelar` | Cancelar reserva | ✅ |
+**Reservas**
+- POST `/reservas/` — criar reserva (requer autenticação)
+- GET `/reservas/` — listar todas as reservas
+- GET `/reservas/{id}` — buscar reserva por ID
+- PATCH `/reservas/{id}/cancelar` — cancelar reserva (requer autenticação)
 
 ---
 
 ## 📋 Regras de Negócio
 
-- ❌ Não é permitido reservar **sala inativa**
-- ❌ Não é permitido **conflito de horário** (mesmo sala, mesma data, horários sobrepostos)
-- ❌ O **horário de fim** deve ser maior que o horário de início
-- ✅ Reservas **canceladas não bloqueiam** horários
-- 🔐 **Criação e cancelamento** de reservas exigem autenticação JWT
+**Salas** possuem os campos: id, nome, capacidade, localização e status (ATIVA ou INATIVA).
+
+**Reservas** possuem os campos: id, id da sala, nome do solicitante, e-mail, data, horário de início, horário de fim, finalidade e status (CONFIRMADA ou CANCELADA).
+
+**Regras obrigatórias aplicadas:**
+- Não é permitido criar reserva em sala com status INATIVA
+- Não é permitido conflito de horário na mesma sala e data
+- O horário de fim deve ser maior que o horário de início
+- Reservas canceladas não bloqueiam horários para novas reservas
+- Criação e cancelamento de reservas exigem autenticação JWT
 
 ---
 
-## 📄 Contrato de Resposta de Erro
+## ⚠️ Tratamento de Erros
 
-Todos os erros seguem o padrão:
+Todos os erros retornam um JSON padronizado no seguinte formato:
 
 ```json
 {
@@ -130,17 +123,13 @@ Todos os erros seguem o padrão:
 }
 ```
 
-### Códigos HTTP utilizados:
-| Código | Descrição |
-|---|---|
-| 200 | OK |
-| 201 | Created |
-| 204 | No Content |
-| 401 | Unauthorized |
-| 403 | Forbidden |
-| 404 | Not Found |
-| 409 | Conflict |
-| 422 | Unprocessable Entity |
+Códigos utilizados: 200 (OK), 201 (Created), 204 (No Content), 401 (Unauthorized), 403 (Forbidden), 404 (Not Found), 409 (Conflict), 422 (Unprocessable Entity).
+
+---
+
+## 🔒 Justificativa de Segurança
+
+Foi escolhido JWT porque é stateless (o servidor não armazena sessões), é o padrão da indústria para APIs REST, permite expiração configurável e carrega informações do usuário sem consultar o banco a cada requisição. O token expira em 60 minutos e é assinado com algoritmo HS256.
 
 ---
 
@@ -152,51 +141,8 @@ pytest tests/ -v
 
 ---
 
-## 🏗️ Estrutura do Projeto
-
-```
-reservas_api/
-├── app/
-│   ├── main.py              # Entrypoint da aplicação
-│   ├── database.py          # Configuração do banco de dados
-│   ├── security.py          # JWT e autenticação
-│   ├── errors.py            # Tratamento padronizado de erros
-│   ├── models/
-│   │   └── models.py        # Modelos SQLAlchemy (Sala, Reserva)
-│   ├── schemas/
-│   │   └── schemas.py       # Schemas Pydantic (validação)
-│   └── routers/
-│       ├── auth.py          # Rota de login
-│       ├── salas.py         # CRUD de salas
-│       └── reservas.py      # CRUD de reservas
-├── tests/
-│   └── test_api.py          # Testes automatizados
-├── requirements.txt
-└── README.md
-```
-
----
-
-## 🔒 Justificativa de Segurança
-
-Foi escolhido **JWT (JSON Web Token)** porque:
-- É **stateless**: o servidor não precisa armazenar sessões
-- É **padrão da indústria** para APIs REST
-- Permite **expiração** configurável do token
-- Carrega **claims** (como `role`) sem consulta ao banco a cada requisição
-- Suporte nativo em bibliotecas como `python-jose`
-
-O token expira em **60 minutos** e é assinado com chave secreta via algoritmo **HS256**.
-
----
-
-## 👥 Grupo
-
-> Preencher com nomes e RMs dos integrantes.
-
----
-
 ## 📎 Links
 
-- 📘 Swagger UI: `http://localhost:8000/docs`
-- 📗 ReDoc: `http://localhost:8000/redoc`
+- Swagger UI: http://localhost:8000/docs
+- ReDoc: http://localhost:8000/redoc
+- OpenAPI JSON: http://localhost:8000/openapi.json
