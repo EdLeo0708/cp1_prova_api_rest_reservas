@@ -16,7 +16,7 @@ Substitui planilhas manuais por um sistema centralizado com regras de negócio, 
 
 | Tecnologia | Uso |
 |---|---|
-| Python 3.11+ | Linguagem |
+| Python | Linguagem |
 | FastAPI | Framework Web |
 | SQLAlchemy | ORM |
 | SQLite | Banco de dados (dev) |
@@ -33,36 +33,28 @@ Substitui planilhas manuais por um sistema centralizado com regras de negócio, 
 - Python 3.11 ou superior
 - pip
 
-### 1. Clone o repositório
+### 1. Crie e ative o ambiente virtual
 ```bash
-git clone <URL_DO_REPOSITORIO>
-cd reservas_api
-```
 
-### 2. Crie e ative o ambiente virtual
-```bash
-python -m venv venv
-
-# Linux / macOS
 source venv/bin/activate
 
 # Windows
 venv\Scripts\activate
 ```
 
-### 3. Instale as dependências
+### 2. Instale as dependências
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Execute a API
+### 3. Execute a API
 ```bash
 uvicorn app.main:app --reload
 ```
 
 A API estará disponível em: **http://localhost:8000**
 
-### 5. Acesse a documentação interativa (Swagger)
+### 4. Acesse a documentação interativa (Swagger)
 ```
 http://localhost:8000/docs
 ```
