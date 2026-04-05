@@ -1,0 +1,1 @@
+#Os arquivos __init__.py vazios são necessários no Python porque eles dizem pro Python que aquela pasta é um pacote módulo importável.
